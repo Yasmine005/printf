@@ -22,7 +22,7 @@ fmt_t fmt_types[] = {
 {'X', print_hexa_upper}, {'p', print_pointer}, {'S', print_non_printable},
 {'r', print_reverse}, {'R', print_rot13string}, {'\0', NULL}
 };
-for (j = 0; fmt_types[i].fmt != '\0'; i++)
+for (j = 0; fmt_types[j].fmt != '\0'; j++)
 if (fmt[*ind] == fmt_types[j].fmt)
 return (fmt_types[j].fn(list, buffer, flags, width, precision, size));
 if (fmt_types[j].fmt == '\0')
