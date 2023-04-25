@@ -1,74 +1,55 @@
-#include <stdarg.h>
-#include <stdio.h>
 #include "main.h"
+void print_buffer(char buffer[], int *buff_ind);
 /**
- * _printf - Custom printf function that handles precision for non-custom conversion specifiers
- *
- * @format: The format string
- * @...: Additional arguments
- *
- * Return: The number of characters printed
- */
+* _printf - ...
+* @format: ...
+* Return: ...
+*/
 int _printf(const char *format, ...)
 {
-va_list args;
-int printed_chars = 0;
-int precision = -1;
-va_start(args, format);
-while (*format)
+int i, printed = 0, printed_chars = 0;
+int flags, width, precision, size, buff_ind = 0;
+va_list list;
+char buffer[BUFF_SIZE];
+if (format == NULL)
+return (-1);
+va_start(list, format);
+for (i = 0; format && format[i] != '\0'; i++)
 {
-if (*format == '%')
+if (format[i] != '%')
 {
-format++;
-if (*format == '.')
-{
-format++;
-precision = 0;
-while (*format >= '0' && *format <= '9')
-{
-precision = precision * 10 + (*format - '0');
-format++;
-}
-}
-switch (*format)
-{
-case 'd':
-case 'i':
-printed_chars += printf("%.*d", precision, va_arg(args, int));
-break;
-case 'u':
-printed_chars += printf("%.*u", precision, va_arg(args, unsigned int));
-break;
-case 'o':
-printed_chars += printf("%.*o", precision, va_arg(args, unsigned int));
-break;
-case 'x':
-printed_chars += printf("%.*x", precision, va_arg(args, unsigned int));
-break;
-case 'X':
-printed_chars += printf("%.*X", precision, va_arg(args, unsigned int));
-break;
-case 'c':
-printed_chars += putchar(va_arg(args, int));
-break;
-case 's':
-printed_chars += printf("%.*s", precision, va_arg(args, char *));
-break;
-default:
-putchar('%');
-putchar(*format);
-printed_chars += 2;
-break;
-}
-precision = -1;
+buffer[buff_ind++] = format[i];
+if (buff_ind == BUFF_SIZE)
+print_buffer(buffer, &buff_ind);
+printed_chars++;
 }
 else
 {
-putchar(*format);
-printed_chars++;
+print_buffer(buffer, &buff_ind);
+flags = get_flags(format, &i);
+width = get_width(format, &i, list);
+precision = get_precision(format, &i, list);
+size = get_size(format, &i);
+++i;
+printed = handle_print(format, &i, list, buffer,
+flags, width, precision, size);
+if (printed == -1)
+return (-1);
+printed_chars += printed;
 }
-format++;
 }
-va_end(args);
+print_buffer(buffer, &buff_ind);
+va_end(list);
 return (printed_chars);
+}
+/**
+* print_buffer - ...
+* @buffer: ...
+* @buff_ind: ...
+*/
+void print_buffer(char buffer[], int *buff_ind)
+{
+if (*buff_ind > 0)
+write(1, &buffer[0], *buff_ind);
+*buff_ind = 0;
 }
